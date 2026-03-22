@@ -12,7 +12,7 @@ pipeline {
             steps {
                 echo "Cloning repository..."
                 git branch: 'main',
-                    url: 'https://github.com/AdityaK05/gradle-pipeline2.git'
+                    url: 'https://github.com/aaradhya177/gradle-exam.git'
             }
         }
 
