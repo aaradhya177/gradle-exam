@@ -1,52 +1,38 @@
 pipeline {
-agent any
+    agent any
 
-tools {
-    jdk 'jdk17'
-}
+    stages {
+        stage('Checkout Code') {
+            steps {
+                echo "Cloning repository..."
+            }
+        }
 
-stages {
+        stage('Build Application') {
+            steps {
+                echo "Building Gradle project..."
+                sh 'chmod +x gradlew'
+                sh './gradlew clean build'
+            }
+        }
 
-    stage('Checkout SCM') {
-        steps {
-            echo 'Checking out code...'
-            checkout scm
+        stage('Run Application') {
+            steps {
+                echo "Running application..."
+                sh './gradlew run'
+            }
         }
     }
 
-    stage('Build') {
-        steps {
-            echo 'Building Project...'
-            sh 'chmod +x gradlew'
-            sh './gradlew clean build'
+    post {
+        success {
+            echo "BUILD SUCCESSFUL 🎉"
+        }
+        failure {
+            echo "BUILD FAILED ❌"
+        }
+        always {
+            echo "Pipeline execution completed."
         }
     }
-
-    stage('Test') {
-        steps {
-            echo 'Running Tests...'
-            sh './gradlew test'
-        }
-    }
-
-    stage('Run Application') {
-        steps {
-            echo 'Running Application...'
-            sh './gradlew run'
-        }
-    }
-}
-
-post {
-    always {
-        echo 'Pipeline Finished!'
-    }
-    success {
-        echo 'Build Successful '
-    }
-    failure {
-        echo 'Build Failed '
-    }
-}
-
 }
