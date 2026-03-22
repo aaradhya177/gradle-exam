@@ -1,48 +1,52 @@
 pipeline {
-    agent any
+agent any
 
-    environment {
-        JAVA_HOME = '/usr/lib/jvm/java-17-openjdk-amd64'
-        PATH = "${JAVA_HOME}/bin:${env.PATH}"
-    }
+tools {
+    jdk 'jdk17'
+}
 
-    stages {
-        stage('Checkout Code') {
-            steps {
-                echo "Cloning repository..."
-                git branch: 'main',
-                    url: 'https://github.com/aaradhya177/gradle-exam.git'
-            }
-        }
+stages {
 
-        stage('Build Application') {
-            steps {
-                echo "Using Java version:"
-                sh 'java -version'
-
-                echo "Building Gradle project..."
-                sh 'chmod +x gradlew'
-                sh './gradlew clean build'
-            }
-        }
-
-        stage('Run Application') {
-            steps {
-                echo "Running application..."
-                sh './gradlew run'
-            }
+    stage('Checkout SCM') {
+        steps {
+            echo 'Checking out code...'
+            checkout scm
         }
     }
 
-    post {
-        success {
-            echo "BUILD SUCCESSFUL 🎉"
-        }
-        failure {
-            echo "BUILD FAILED ❌"
-        }
-        always {
-            echo "Pipeline execution completed."
+    stage('Build') {
+        steps {
+            echo 'Building Project...'
+            sh 'chmod +x gradlew'
+            sh './gradlew clean build'
         }
     }
+
+    stage('Test') {
+        steps {
+            echo 'Running Tests...'
+            sh './gradlew test'
+        }
+    }
+
+    stage('Run Application') {
+        steps {
+            echo 'Running Application...'
+            sh './gradlew run'
+        }
+    }
+}
+
+post {
+    always {
+        echo 'Pipeline Finished!'
+    }
+    success {
+        echo 'Build Successful 🎉'
+    }
+    failure {
+        echo 'Build Failed ❌'
+    }
+}
+
 }
